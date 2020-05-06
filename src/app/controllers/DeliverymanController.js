@@ -3,9 +3,9 @@ import Deliveryman from '../models/Deliveryman';
 
 class DeliverymanController {
   async index(req, res) {
-    const deliverymen = await Deliveryman.findAll();
+    const deliverymans = await Deliveryman.findAll();
 
-    return res.json(deliverymen);
+    return res.json(deliverymans);
   }
 
   async store(req, res) {
@@ -35,7 +35,31 @@ class DeliverymanController {
   }
 
   async update(req, res) {
-    return res.json({ update: 'ok' });
+    const schema = Yup.object().shape({
+      name: Yup.string(),
+      email: Yup.string().email(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
+    const { email } = req.body;
+    const { id } = req.params;
+
+    const deliveryman = await Deliveryman.findByPk(id);
+
+    if (email && email !== deliveryman.email) {
+      const emailExists = await Deliveryman.findOne({ where: { email } });
+
+      if (emailExists) {
+        return res.status(400).json({ error: 'Email already exists' });
+      }
+    }
+
+    await deliveryman.update(req.body);
+
+    return res.json(deliveryman);
   }
 
   async delete(req, res) {
@@ -47,9 +71,9 @@ class DeliverymanController {
       return res.status(400).json({ error: 'You must inform a valid id' });
     }
 
-    await deliveryman.delete;
+    await deliveryman.destroy();
 
-    return res.json({ delete: 'ok' });
+    return res.json({ sucess: 'Deliveryman deleted' });
   }
 }
 
