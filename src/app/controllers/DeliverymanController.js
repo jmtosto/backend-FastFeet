@@ -63,7 +63,7 @@ class DeliverymanController {
   }
 
   async delete(req, res) {
-    const { id } = req.body;
+    const { id } = req.params;
 
     const deliveryman = await Deliveryman.findOne({ where: { id } });
 
