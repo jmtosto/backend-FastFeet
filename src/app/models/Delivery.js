@@ -1,13 +1,22 @@
 import Sequelize, { Model } from 'sequelize';
 
-class Order extends Model {
+class Delivery extends Model {
   static init(sequelize) {
     super.init(
       {
         product: Sequelize.STRING,
-        canceled_at: Sequelize.DATE,
+        status: {
+          type: Sequelize.VIRTUAL,
+          get() {
+            if (this.canceled_at) return 'cancelada';
+            if (this.end_date) return 'entregue';
+            if (this.start_date) return 'retirada';
+            return 'pendente';
+          },
+        },
         start_date: Sequelize.DATE,
         end_date: Sequelize.DATE,
+        canceled_at: Sequelize.DATE,
       },
       {
         sequelize,
@@ -33,4 +42,4 @@ class Order extends Model {
   }
 }
 
-export default Order;
+export default Delivery;
