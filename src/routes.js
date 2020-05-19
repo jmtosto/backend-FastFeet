@@ -37,5 +37,6 @@ routes.put('/deliveries/:deliveryId', DeliveryController.update);
 routes.delete('/deliveries/:deliveryId', DeliveryController.delete);
 
 routes.get('/deliveryman/:deliverymanId/deliveries', ScheduleController.index);
+routes.put('/delivery/:deliveryId/start-delivery', ScheduleController.update);
 
 export default routes;
