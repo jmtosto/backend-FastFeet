@@ -1,9 +1,12 @@
 import * as Yup from 'yup';
 import { Op } from 'sequelize';
+
 import Delivery from '../models/Delivery';
 import File from '../models/File';
 import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
+
+import Mail from '../../lib/Mail';
 
 class DeliveryController {
   async index(req, res) {
@@ -87,6 +90,27 @@ class DeliveryController {
       recipient_id,
       deliveryman_id,
       product,
+    });
+
+    // Email to deliveryman
+    const deliveryman = await Deliveryman.findByPk(deliveryman_id);
+    const recipient = await Recipient.findByPk(recipient_id);
+
+    await Mail.sendMail({
+      to: `${deliveryman.name} <${deliveryman.email}>`,
+      subject: 'Nova encomenda cadastrada',
+      template: 'newDelivery',
+      context: {
+        deliveryman: deliveryman.name,
+        product,
+        recipient: recipient.name,
+        street: recipient.street,
+        number: recipient.number,
+        complement: recipient.complement,
+        state: recipient.state,
+        city: recipient.city,
+        zip_code: recipient.zip_code,
+      },
     });
 
     return res.json(delivery);

@@ -113,6 +113,10 @@ class ScheduleController {
         .json({ error: "You don't have permission to start this delivery" });
     }
 
+    if (delivery.canceled_at) {
+      return res.status(400).json({ error: 'This delivery is canceled' });
+    }
+
     if (delivery.start_date) {
       return res
         .status(400)
@@ -123,10 +127,6 @@ class ScheduleController {
       return res
         .status(400)
         .json({ error: 'This delivery is already finished' });
-    }
-
-    if (delivery.canceled_at) {
-      return res.status(400).json({ error: 'This delivery is canceled' });
     }
 
     const parsedDate = new Date();
