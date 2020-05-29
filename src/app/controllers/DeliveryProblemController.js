@@ -6,7 +6,8 @@ import DeliveryProblem from '../models/DeliveryProblem';
 import Deliveryman from '../models/Deliveryman';
 import Recipient from '../models/Recipient';
 
-import Mail from '../../lib/Mail';
+import CancellationMail from '../jobs/CancellationMail';
+import Queue from '../../lib/Queue';
 
 class DeliveryProblemController {
   async index(req, res) {
@@ -165,15 +166,8 @@ class DeliveryProblemController {
     await delivery.save();
 
     // Email to deliveryman
-    await Mail.sendMail({
-      to: `${delivery.deliveryman.name} <${delivery.deliveryman.email}>`,
-      subject: 'Entrega cancelada',
-      template: 'cancellation',
-      context: {
-        deliveryman: delivery.deliveryman.name,
-        product: delivery.product,
-        recipient: delivery.recipient.name,
-      },
+    await Queue.add(CancellationMail.key, {
+      delivery,
     });
 
     return res.json(delivery);
