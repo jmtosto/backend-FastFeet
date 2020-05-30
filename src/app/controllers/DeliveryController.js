@@ -69,7 +69,7 @@ class DeliveryController {
       };
     }
 
-    const deliveries = await Delivery.findAll(query);
+    const deliveries = await Delivery.finddAll(query);
 
     return res.json(deliveries);
   }
